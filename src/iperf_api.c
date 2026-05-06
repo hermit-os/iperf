@@ -4856,8 +4856,8 @@ iperf_new_stream(struct iperf_test *test, int s, int sender)
         free(sp);
         return NULL;
     }
-    sp->buffer = (char *) mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_SHARED, sp->buffer_fd, 0);
-    if (sp->buffer == MAP_FAILED) {
+    sp->buffer = (char *)malloc(size);
+    if (sp->buffer == NULL) {
         i_errno = IECREATESTREAM;
         free(sp->result);
         free(sp);
@@ -4875,7 +4875,7 @@ iperf_new_stream(struct iperf_test *test, int s, int sender)
 	sp->diskfile_fd = open(test->diskfile_name, sender ? O_RDONLY : (O_WRONLY|O_CREAT|O_TRUNC), S_IRUSR|S_IWUSR);
 	if (sp->diskfile_fd == -1) {
 	    i_errno = IEFILE;
-            munmap(sp->buffer, sp->test->settings->blksize);
+            free(sp->buffer);
             free(sp->result);
             free(sp);
 	    return NULL;
@@ -4895,7 +4895,7 @@ iperf_new_stream(struct iperf_test *test, int s, int sender)
 
     if ((ret < 0) || (iperf_init_stream(sp, test) < 0)) {
         close(sp->buffer_fd);
-        munmap(sp->buffer, sp->test->settings->blksize);
+        free(sp->buffer);
         free(sp->result);
         free(sp);
         return NULL;
