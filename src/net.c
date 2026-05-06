@@ -458,15 +458,19 @@ Nrecv(int fd, char *buf, size_t count, int prot, int sock_opt)
         } else if (r == 0)
             break;
 
+#if defined(HAVE_MSG_TRUNC)
 	if (sock_opt & MSG_TRUNC) {
             size_t bytes_copied = (r > nleft)? nleft: r;
             nleft -= bytes_copied;
             buf += bytes_copied;
         }
 	else {
+#endif /* HAVE_MSG_TRUNC */
             nleft -= r;
             buf += r;
+#if defined(HAVE_MSG_TRUNC)
         }
+#endif /* HAVE_MSG_TRUNC */
 
         /*
          * We need some more bytes but don't want to wait around
@@ -537,15 +541,19 @@ Nrecv_no_select(int fd, char *buf, size_t count, int prot, int sock_opt)
         } else if (r == 0)
             break;
 
+#if defined(HAVE_MSG_TRUNC)
 	if (sock_opt & MSG_TRUNC) {
             size_t bytes_copied = (r > nleft)? nleft: r;
             nleft -= bytes_copied;
             buf += bytes_copied;
         }
 	else {
+#endif /* HAVE_MSG_TRUNC */
             nleft -= r;
             buf += r;
+#if defined(HAVE_MSG_TRUNC)
         }
+#endif /* HAVE_MSG_TRUNC */
 
 
     }
