@@ -25,7 +25,7 @@ function hermit-c-run() {
 }
 
 HOST="${ARCH}"-hermit
-hermit-c-run ./configure --host="${HOST}" LDFLAGS=-L../lib/ --disable-shared
+hermit-c-run ./configure --host="${HOST}" --disable-shared
 hermit-c-run make --directory=src --jobs iperf3
 
 sudo qemu-system-"${ARCH}" \
