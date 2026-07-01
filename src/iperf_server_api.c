@@ -485,14 +485,16 @@ cleanup_server(struct iperf_test *test)
                 errno = rc;
                 iperf_err(test, "cleanup_server in pthread_cancel - %s", iperf_strerror(i_errno));
             }
-            rc = pthread_join(sp->thr, NULL);
-            if (rc != 0 && rc != ESRCH) {
-                i_errno = IEPTHREADJOIN;
-                errno = rc;
-                iperf_err(test, "cleanup_server in pthread_join - %s", iperf_strerror(i_errno));
-            }
-            if (test->debug_level >= DEBUG_LEVEL_INFO) {
-                iperf_printf(test, "Thread FD %d stopped\n", sp->socket);
+            if (rc != ESRCH) {
+                rc = pthread_join(sp->thr, NULL);
+                if (rc != 0 && rc != ESRCH) {
+                    i_errno = IEPTHREADJOIN;
+                    errno = rc;
+                    iperf_err(test, "cleanup_server in pthread_join - %s", iperf_strerror(i_errno));
+                }
+                if (test->debug_level >= DEBUG_LEVEL_INFO) {
+                    iperf_printf(test, "Thread FD %d stopped\n", sp->socket);
+                }
             }
             sp->thread_created = 0;
         }
