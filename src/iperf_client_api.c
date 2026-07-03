@@ -786,15 +786,17 @@ iperf_run_client(struct iperf_test * test)
                                 iperf_err(test, "sender cancel in pthread_cancel - %s", iperf_strerror(i_errno));
                                 goto cleanup_and_fail;
                             }
-                            rc = pthread_join(sp->thr, NULL);
-                            if (rc != 0 && rc != ESRCH) {
-                                i_errno = IEPTHREADJOIN;
-                                errno = rc;
-                                iperf_err(test, "sender cancel in pthread_join - %s", iperf_strerror(i_errno));
-                                goto cleanup_and_fail;
-                            }
-                            if (test->debug_level >= DEBUG_LEVEL_INFO) {
-                                iperf_printf(test, "Thread FD %d stopped\n", sp->socket);
+                            if (rc != ESRCH) {
+                                rc = pthread_join(sp->thr, NULL);
+                                if (rc != 0 && rc != ESRCH) {
+                                    i_errno = IEPTHREADJOIN;
+                                    errno = rc;
+                                    iperf_err(test, "sender cancel in pthread_join - %s", iperf_strerror(i_errno));
+                                    goto cleanup_and_fail;
+                                }
+                                if (test->debug_level >= DEBUG_LEVEL_INFO) {
+                                    iperf_printf(test, "Thread FD %d stopped\n", sp->socket);
+                                }
                             }
                             sp->thread_created = 0;
                         }
